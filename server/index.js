@@ -37,7 +37,7 @@ app.route( '/usuarios' )
         respuesta = {
             error: false,
             codigo: 200,
-            mensaje: 'listado de usuarios',
+            mensaje: 'listado',
             respuesta: usuarios
         };
         res.send( respuesta );
