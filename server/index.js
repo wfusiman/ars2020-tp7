@@ -142,15 +142,17 @@ app.route( '/usuarios/:id')
                 mensaje: 'El usuario con id ' + req.params.id + ' no existe'
             }
         }
-        let i = usuarios.indexOf( usr );
-        if (i !== -1) 
-            usuarios.splice( i,1 );
-        respuesta = {
-            error: false,
-            codigo: 200,
-            mensaje: 'Usuario eliminado',
-            respuesta: usr
-        };
+        else {
+            let i = usuarios.indexOf( usr );
+            if (i !== -1) 
+                usuarios.splice( i,1 );
+            respuesta = {
+                error: false,
+                codigo: 200,
+                mensaje: 'Usuario eliminado',
+                respuesta: usr
+            };
+        }
         res.send( respuesta );
     });
 

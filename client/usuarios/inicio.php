@@ -98,11 +98,11 @@ include './header.html';
                         <h4>Usuarios</h4>
                   </div>';
            echo' <ul>
-                    <li><a href="/usuarios/dashboard/results.php?listar">Listar</a></li>
-                    <li><a href="/usuarios/dashboard/inicio.php?nuevo">Crear</a></li>
-                    <li><a href="/usuarios/dashboard/inicio.php?buscar">Buscar</a></li>
-                    <li><a href="/usuarios/dashboard/inicio.php?modificar">Modificar</a></li>
-                    <li><a href="/usuarios/dashboard/inicio.php?eliminar">Eliminar</a></li>
+                    <li><a href="/usuarios/results.php?listar">Listar</a></li>
+                    <li><a href="/usuarios/inicio.php?nuevo">Crear</a></li>
+                    <li><a href="/usuarios/inicio.php?buscar">Buscar</a></li>
+                    <li><a href="/usuarios/inicio.php?modificar">Modificar</a></li>
+                    <li><a href="/usuarios/inicio.php?eliminar">Eliminar</a></li>
                 </ul>';
             echo '</form>';
         }

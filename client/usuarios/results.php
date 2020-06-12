@@ -7,14 +7,14 @@
 <div class="testbox">
     <?PHP
         echo '<form>';
-        if ($_GET && isset( $_GET['listar'])) {
+        if ($_GET && isset( $_GET['listar'])) { // Listar todos los usuarios
             echo '<div>
                      <h1 style="color: black">GET usuarios</h1><br><br>
                   </div>';
 
             $get_data = callAPI( 'GET','http://localhost:3000/usuarios', false );
         }
-        else if ($_GET && isset( $_GET['id'])) {
+        else if ($_GET && isset( $_GET['id'])) { // Buscar un usuario por id
             echo '<div>
                     <h1 style="color: black">GET usuario</h1><br><br>
                    </div>';
@@ -23,7 +23,7 @@
         }
         else if($_POST && isset( $_POST['metodo'])) {
             $metodo = $_POST['metodo'];
-            if ($metodo == 'post') {
+            if ($metodo == 'post') {   // Crear un nuevo usuario
                $data_array =  array(
                   "nombre" => $_POST['nombre'],
                   "apellido" => $_POST['apellido']
@@ -33,7 +33,7 @@
                      </div>';
                $get_data = callAPI( 'POST','http://localhost:3000/usuarios', json_encode( $data_array ));
             }
-            else if ($metodo == 'put') {
+            else if ($metodo == 'put') { // Modificar datos de un usuario por id
                $id = $_POST['id'];
                $data_array =  array(
                   "nombre" => $_POST['nombre'],
@@ -44,7 +44,7 @@
                      </div>';
                $get_data = callAPI( 'PUT','http://localhost:3000/usuarios/'.$id , json_encode( $data_array ));
             }
-            else if ($metodo == 'del') {
+            else if ($metodo == 'del') { // Eliminar un usuario por id
                $id = $_POST['id'];
                echo '<div>
                         <h1 style="color: black">DELETE usuario</h1><br><br>
@@ -61,11 +61,11 @@
          echo '<p style="font-size: 20px">Respuesta servidor:</p><br>';
          echo '<div class="name-item" style="font-size: 18px">';
 
-         if ($error) 
+         if ($error)  // Si fue error imprime el mensaje de error.
             echo '<span>Error codigo: ' . $codigo . '<br>' . $mensaje . '</span>';
-         else { 
+         else {   // Si no fue error muesta la respuesta.
             $respuesta = $data['respuesta'];
-            if ($mensaje === "listado") {
+            if ($mensaje === "listado") { // muestra la tabla de usuarios
                $cant = count( $respuesta );
                echo '<span>Usuarios (' . $cant . ')</span>';
                echo '<table style="width: 100%; border: 2px solid #2a5d84;">';
@@ -84,7 +84,7 @@
                }
                echo '</table>';
             }
-            else {
+            else {  // Muestra mensaje respuesta.
                echo '<span>' . $mensaje . '<br>';
                echo 'id: '.$respuesta['id'] .', nombre: ' . $respuesta['nombre'] . ', apellido: ' . $respuesta['apellido'] . '</span>';
             }
