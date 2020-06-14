@@ -13,7 +13,6 @@ app.use( bodyParser.json() );
 
 
 let usuarios = [];  // Lista de usuarios.
-let indice = 0;     // Indice contador para id de usuarios.
 
 let respuesta = {
     error: false,
@@ -61,7 +60,7 @@ app.route( '/usuarios' )
             }
             else {
                 let newUsuario = {
-                    id: ++indice,
+                    id: (usuarios.length == 0) ? 1 : usuarios[ usuarios.length - 1].id + 1,
                     nombre: req.body.nombre,
                     apellido: req.body.apellido
                 }
