@@ -14,5 +14,5 @@ Copiar la carpeta client en el directorio htdocs de la instalacion de Xampp. Eje
 Una vez iniciado acceder mediante el browser a la url:
 http://localhost:80/usuarios \
 Inicialmente se requiere la autenticacion de un usuario administrador mediante la pantalla de login.
-Los administradores habilitados se encuentran en el archivos configs/configs.js
+Los administradores habilitados se encuentran en el server en el archivo /configs/admins.js
 Mediante este cliente PHP se pueden realizar operaciones sobre usuarios: listar, buscar, crear, modificar y eliminar.
