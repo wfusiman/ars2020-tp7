@@ -7,6 +7,7 @@
 	}
 	$uri .= $_SERVER['HTTP_HOST'];
 
-	header('Location: '.$uri.'/usuarios/inicio.php');
+	// Redicciona a login.php
+	header('Location: '.$uri.'/usuarios/login.php');
 	exit;
 ?>

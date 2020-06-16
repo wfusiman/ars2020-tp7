@@ -1,8 +1,14 @@
 <?php
-include './header.html';
+include './header.php';
+// Si no existe una sesion abierta, se redirecciona a login.
+if (!isset( $_SESSION['sesion_usr'] )) {
+    header( 'Location: login.php' );
+} 
+
 ?>
  <div class="testbox">
         <?php
+        // Buscar opcion por id, muestra formulario para ingresar el id.
         if ($_GET && isset( $_GET['buscar'])) {
             echo '<form action="./results.php" method="GET">';
             echo '<div >
@@ -20,6 +26,7 @@ include './header.html';
                  </div>';
             echo '</form>';
         }
+        // Crear un nuevo usuario: muestra el formulario para ingrese de nombre y apellido
         else if($_GET && isset( $_GET['nuevo'])){
             echo '<form action="./results.php" method="POST">';
             echo '<div>
@@ -44,6 +51,7 @@ include './header.html';
                  </div>';
             echo '</form>';
         }
+        // modificar usuario: muestra el formulario para ingreso de id, y nombre a apellido a modificar.
         else if($_GET && isset( $_GET['modificar'])){
             echo '<form action="./results.php" method="POST">';
             echo '<div>
@@ -74,6 +82,7 @@ include './header.html';
                  </div>';
             echo '</form>';
         }
+        // Eliminar usuario: muestra formulario para ingreso de id de usuario a eliminar.
         else if($_GET && isset( $_GET['eliminar'])){
             echo '<form action="./results.php" method="POST">';
             echo '<div >
@@ -92,6 +101,7 @@ include './header.html';
                  </div>';
             echo '</form>';
         }
+        // Muestra las operaciones disponibles para realizar con usuarios.
         else {
             echo '<form>';
             echo '<div>

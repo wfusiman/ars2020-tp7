@@ -6,11 +6,15 @@
 
 const express = require( 'express' );
 const bodyParser = require( 'body-parser' );
+const jwt = require( 'jsonwebtoken' );
+const config = require( './configs/config' );
+const admins = require( './configs/admins' );
+
 const app = express();
 
+app.set( 'llave', config.llave );
 app.use( bodyParser.urlencoded( {extended: true } ) );
 app.use( bodyParser.json() );
-
 
 let usuarios = [];  // Lista de usuarios.
 
@@ -30,8 +34,71 @@ app.get( '/', ( req,res )  => {
     res.send( respuesta );
 });
 
+// login: valida usuario y contraseña y genera token de respuesta.
+app.post( '/login', (req, res) => {
+    if (!req.body.usuario || !req.body.password) { 
+        respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Los campos usuario y contraseña son requeridos'
+        };
+    }
+    else if (admins.find( usr => usr.usuario === req.body.usuario && usr.password === req.body.password)) {
+        const payload = {
+            check: true,
+        };
+        const token = jwt.sign( payload, app.get('llave'), { expiresIn: 1440 });
+        respuesta = {
+            error: false,
+            codigo: 200,
+            mensaje: token
+        };
+    }
+    else {
+        respuesta = {
+            error: true,
+            codigo: 502,
+            mensaje: 'Usuario y/o contraseñas invalidos'
+        }
+    }
+    res.send( respuesta );
+});
+
+// middleware para verificar token, y redireccionar 
+var middleware = (req,res,next) => {
+    console.log( 'Middleware, headers : ', req.headers );
+    console.log( 'Middleware, body : ', req.body );
+    const token = req.headers['access-token'];
+    if (token) {
+        jwt.verify( token, app.get('llave'), (err,decoded) => {
+            if (err) {
+                respuesta = {
+                    error: true,
+                    codigo: 401,
+                    mensaje: 'Error verificando token, invalido',
+                };
+                return res.json( respuesta );
+            }
+            else {
+                req.decoded = decoded;
+                next();
+            }
+        });
+    }
+    else {
+        respuesta = {
+            error: true,
+            codigo: 401,
+            mensaje: 'Error verificando token, no se especifico token',
+        };
+        res.send(  respuesta );
+    }
+}
+
+app.use( middleware );
+
 // Router GET, POST
-app.route( '/usuarios' )
+app.route( '/usuarios', middleware )
     .get( (req,res ) => { // get usuarios: recupera el listado de todos los usuarios
         respuesta = {
             error: false,
@@ -77,7 +144,7 @@ app.route( '/usuarios' )
     });
 
 // Router GET, PUT, DELETE
-app.route( '/usuarios/:id')
+app.route( '/usuarios/:id', middleware )
     .get( ( req,res ) => { // Recupera el usuario con id especifico
         let usr = usuarios.find( usuario => (usuario.id == req.params.id) );
         if (!usr) {
@@ -155,14 +222,6 @@ app.route( '/usuarios/:id')
         res.send( respuesta );
     });
 
-app.use( function( req,res,next ) {
-    respuesta = {
-        error: true,
-        codigo: 404,
-        mensaje: 'URL no encontrada'
-    };
-    res.status( 404 ).send( respuesta );
-});
 
 // servidor escucha en el puerto 3000.
 PORT = 3000;

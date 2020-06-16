@@ -1,27 +1,32 @@
 
 <?php 
-
-  include './header.html'; 
-
+   require_once( 'api.php');
+   include './header.php';
+   // Si no existe una sesion abierta, se redirecciona a login.
+   if (!isset( $_SESSION['sesion_usr'] )) {
+      header( 'Location: login.php' );
+  }  
 ?>
+
 <div class="testbox">
     <?PHP
-        echo '<form>';
-        if ($_GET && isset( $_GET['listar'])) { // Listar todos los usuarios
+         $header = 'access-token:'. $_SESSION['sesion_token'];
+         echo '<form>';
+         if ($_GET && isset( $_GET['listar'])) { // Listar todos los usuarios
             echo '<div>
                      <h1 style="color: black">GET usuarios</h1><br><br>
                   </div>';
 
-            $get_data = callAPI( 'GET','http://localhost:3000/usuarios', false );
-        }
-        else if ($_GET && isset( $_GET['id'])) { // Buscar un usuario por id
+            $get_data = callAPI( 'GET','http://localhost:3000/usuarios', false, $header );
+         }
+         else if ($_GET && isset( $_GET['id'])) { // Buscar un usuario por id
             echo '<div>
                     <h1 style="color: black">GET usuario</h1><br><br>
                    </div>';
             $id = intval( $_GET['id'] );
-            $get_data = callAPI( 'GET','http://localhost:3000/usuarios/'.$id, false );
-        }
-        else if($_POST && isset( $_POST['metodo'])) {
+            $get_data = callAPI( 'GET','http://localhost:3000/usuarios/'.$id, false, $header );
+         }
+         else if($_POST && isset( $_POST['metodo'])) {
             $metodo = $_POST['metodo'];
             if ($metodo == 'post') {   // Crear un nuevo usuario
                $data_array =  array(
@@ -31,7 +36,7 @@
                echo '<div>
                         <h1 style="color: black">POST usuario</h1><br><br>
                      </div>';
-               $get_data = callAPI( 'POST','http://localhost:3000/usuarios', json_encode( $data_array ));
+               $get_data = callAPI( 'POST','http://localhost:3000/usuarios', json_encode( $data_array ), $header);
             }
             else if ($metodo == 'put') { // Modificar datos de un usuario por id
                $id = $_POST['id'];
@@ -42,17 +47,17 @@
                echo '<div>
                         <h1 style="color: black">PUT usuario</h1><br><br>
                      </div>';
-               $get_data = callAPI( 'PUT','http://localhost:3000/usuarios/'.$id , json_encode( $data_array ));
+               $get_data = callAPI( 'PUT','http://localhost:3000/usuarios/'.$id , json_encode( $data_array ), $header);
             }
             else if ($metodo == 'del') { // Eliminar un usuario por id
                $id = $_POST['id'];
                echo '<div>
                         <h1 style="color: black">DELETE usuario</h1><br><br>
                      </div>';
-               $get_data = callAPI( 'DEL','http://localhost:3000/usuarios/'.$id, false );
+               $get_data = callAPI( 'DEL','http://localhost:3000/usuarios/'.$id, false, $header );
             }
-        }
-
+         }
+         // Procesar el resultado.
          $data = json_decode( $get_data, true);
          $error = $data['error'];
          $codigo = $data['codigo'];
@@ -61,11 +66,11 @@
          echo '<p style="font-size: 20px">Respuesta servidor:</p><br>';
          echo '<div class="name-item" style="font-size: 18px">';
 
-         if ($error)  // Si fue error imprime el mensaje de error.
+         if ($error)  // Si fue error muestra solo el mensaje de error.
             echo '<span>Error codigo: ' . $codigo . '<br>' . $mensaje . '</span>';
          else {   // Si no fue error muesta la respuesta.
             $respuesta = $data['respuesta'];
-            if ($mensaje === "listado") { // muestra la tabla de usuarios
+            if ($mensaje === "listado") { // si es listado de usuario, los muestra en una tabla
                $cant = count( $respuesta );
                echo '<span>Usuarios (' . $cant . ')</span>';
                echo '<table style="width: 100%; border: 2px solid #2a5d84;">';
@@ -84,55 +89,16 @@
                }
                echo '</table>';
             }
-            else {  // Muestra mensaje respuesta.
+            else {  // sino, muestra mensaje respuesta.
                echo '<span>' . $mensaje . '<br>';
                echo 'id: '.$respuesta['id'] .', nombre: ' . $respuesta['nombre'] . ', apellido: ' . $respuesta['apellido'] . '</span>';
             }
-         }
-            
+         }   
          echo '</div></div>';
          echo '<div>
                   <button id="btnSalir" type="button" onclick="location.href=\'./inicio.php?menu\'">Salir</button>
                </div>';
-       
          echo '</form>';
-
-        function callAPI($method, $url, $data){
-          $curl = curl_init();
-          switch ($method){
-             case "POST":
-                curl_setopt($curl, CURLOPT_POST, 1);
-                if ($data)
-                   curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-                break;
-             case "PUT":
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-                if ($data)
-                   curl_setopt($curl, CURLOPT_POSTFIELDS, $data);		
-                break;
-             case "DEL":
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-                if ($data)
-                   curl_setopt($curl, CURLOPT_POSTFIELDS, $data);	
-                break;
-             default:
-                if ($data)
-                   $url = sprintf("%s?%s", $url, http_build_query($data));
-          }
-          // OPTIONS:
-          curl_setopt($curl, CURLOPT_URL, $url);
-          curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-             'APIKEY: 111111111111111111111',
-             'Content-Type: application/json',
-          ));
-          curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-          curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-          // EXECUTE:
-          $result = curl_exec($curl);
-          if(!$result){die("Connection Failure");}
-          curl_close($curl);
-          return $result;
-       }
       ?>
           
 </div>
